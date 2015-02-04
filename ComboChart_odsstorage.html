@@ -1,0 +1,48 @@
+<html>
+  <head>
+    <script type="text/javascript" src="jsapi"></script>
+   <script src="jquery-1.11.0.js"></script>
+   <script src="jquery.csv-0.71.js"></script>
+    <script type="text/javascript">
+// load the visualization library from Google and set a listener
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+
+// this has to be a global function
+function drawChart() {
+   // grab the CSV for DDO ODS
+   $.get("ComboChart_odsstorage.csv", function(csvString) {
+      // transform the CSV string into a 2-dimensional array
+      var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+
+      // this new DataTable object holds all the data
+      var data = new google.visualization.arrayToDataTable(arrayData);
+
+      // this view can select a subset of the data at a time
+      var view = new google.visualization.DataView(data);
+      //view.setColumns([0,2]);
+
+     // set chart options
+     var options = {
+        title : 'DDO ODS Storage Status (Size: GB)', 
+         vAxis: {title: " "},
+         hAxis: {title: "Date" , slantedTextAngle:15},  
+         seriesType: "area",
+         isStacked: 'false',
+         series: {0: {type: "line"} , 2: {type: "line"}},
+         legend:{position:'right'}, 
+         pointSize: 3
+     };
+
+     // create the chart object and draw it
+     var chart = new google.visualization.ComboChart(document.getElementById('div_ddo'));
+     chart.draw(view, options);
+  });
+}
+    </script>
+  </head>
+  <body>
+ 	<title> ODS Storage Status Tracking </title>
+    <div id="div_ddo" style="width: 90%; height: 500px;"></div>
+  </body>
+</html> 
